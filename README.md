@@ -1,3 +1,3 @@
 ✨ Part of the Magic Window series:
 # The Orange Emitter
-Spicetify extension that allows you to listen for track changes via WebSocket.
+Spicetify extension that Emits track changes/data to an external WebSocket server.
