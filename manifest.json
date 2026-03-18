@@ -7,5 +7,6 @@
   "branch": "rolling-release",
   "authors": [
     { "name": "pandev", "url": "https://github.com/la-pandev" }
-  ]
+  ],
+  "tags": ["websocket", "api"]
 }
