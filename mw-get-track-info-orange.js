@@ -1,46 +1,5 @@
-// src/settings/mwoe-change-submit-button-state.ts
-function mwoeChangeSubmitButtonState(submit_button_el, action, error_message) {
-  if (action === "applying") {
-    submit_button_el.disabled = true;
-    submit_button_el.style.cursor = "not-allowed";
-    submit_button_el.style.backgroundColor = "#405055";
-    submit_button_el.style.color = "#24ffc3";
-    submit_button_el.textContent = "Applying changes...";
-    return;
-  }
-  if (action === "success") {
-    submit_button_el.disabled = true;
-    submit_button_el.style.cursor = "not-allowed";
-    submit_button_el.style.backgroundColor = "#455540";
-    submit_button_el.style.color = "#6dff24";
-    submit_button_el.textContent = "Setting Saved Successfully!";
-    return;
-  }
-  submit_button_el.disabled = false;
-  submit_button_el.style.cursor = "pointer";
-  submit_button_el.style.backgroundColor = "#554040";
-  submit_button_el.style.color = "#ffb6b6";
-  submit_button_el.textContent = `${error_message}. Click here to retry.`;
-}
 
-// src/settings/mwoe-change-setting-emission-mode.ts
-function mwoeChangeSettingEmissionMode(mwoe_app_state, submit_button_el) {
-  if (submit_button_el == null) {
-    return;
-  }
-  const select_el = submit_button_el.previousElementSibling?.previousElementSibling;
-  if (select_el == null) {
-    return;
-  }
-  const selected_emission_mode = select_el.value;
-  if (selected_emission_mode == null || selected_emission_mode === "") {
-    mwoeChangeSubmitButtonState(submit_button_el, "error", "Please submit a non-empty value");
-    return;
-  }
-  Spicetify.LocalStorage.set(mwoe_app_state.emission_mode.local_storage_key, selected_emission_mode);
-  mwoe_app_state.emission_mode.value = selected_emission_mode;
-  mwoeChangeSubmitButtonState(submit_button_el, "success");
-}
+const app_pandev_mw_get_track_info_orange_global = (function() {
 // node_modules/tslib/tslib.es6.mjs
 var extendStatics = function(d, b) {
   extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
@@ -1679,6 +1638,57 @@ function timeout(config2, schedulerArg) {
 function timeoutErrorFactory(info) {
   throw new TimeoutError(info);
 }
+// src/app/create-default-app-state.ts
+function createDefaultAppState() {
+  return {
+    app_name: "Get Track Info",
+    emission_mode: {
+      value: "active",
+      local_storage_key: "mwGtiOrange:emissionMode"
+    },
+    ws_server_config: {
+      connection_url: {
+        default_value: "ws://localhost:6603",
+        local_storage_key: "mwGtiOrange:wsServerConnectionUrl"
+      }
+    },
+    ws_client: {
+      retry_stop_flag: new Subject
+    },
+    logger: (item_list) => {
+      console.log("[MwGtiOrange]", item_list);
+    }
+  };
+}
+
+// src/app/app-global-symbol-name.ts
+var APP_GLOBAL_SYMBOL_NAME = "app_pandev_mw_get_track_info_orange_global";
+
+// src/settings/change-submit-button-state.ts
+function changeSubmitButtonState(submit_button_el, action, error_message) {
+  if (action === "applying") {
+    submit_button_el.disabled = true;
+    submit_button_el.style.cursor = "not-allowed";
+    submit_button_el.style.backgroundColor = "#405055";
+    submit_button_el.style.color = "#24ffc3";
+    submit_button_el.textContent = "Applying changes...";
+    return;
+  }
+  if (action === "success") {
+    submit_button_el.disabled = true;
+    submit_button_el.style.cursor = "not-allowed";
+    submit_button_el.style.backgroundColor = "#455540";
+    submit_button_el.style.color = "#6dff24";
+    submit_button_el.textContent = "Setting Saved Successfully!";
+    return;
+  }
+  submit_button_el.disabled = false;
+  submit_button_el.style.cursor = "pointer";
+  submit_button_el.style.backgroundColor = "#554040";
+  submit_button_el.style.color = "#ffb6b6";
+  submit_button_el.textContent = `${error_message}. Click here to retry.`;
+}
+
 // node_modules/rxjs/dist/esm5/internal/ReplaySubject.js
 var ReplaySubject2 = function(_super) {
   __extends(ReplaySubject3, _super);
@@ -1956,129 +1966,145 @@ var WebSocketSubject = function(_super) {
 function webSocket(urlConfigOrSource) {
   return new WebSocketSubject(urlConfigOrSource);
 }
-// src/ws-client/mwoe-send-track-data.ts
-function mwoeSendTrackData(mwoe_app_state) {
+// src/ws-client/send-track-data.ts
+function sendTrackData(app_state) {
   const track_data = Spicetify.Player.data?.item;
   if (track_data == null) {
     return;
   }
-  mwoe_app_state.ws_client.subject?.next(JSON.stringify(track_data));
+  app_state.ws_client.subject?.next(JSON.stringify(track_data));
 }
 
-// src/ws-client/mwoe-init-ws-client.ts
-function mwoeInitWsClient(mwoe_app_state) {
-  mwoe_app_state.ws_server_config.connection_url.current_value = Spicetify.LocalStorage.get(mwoe_app_state.ws_server_config.connection_url.local_storage_key) ?? undefined;
-  if (mwoe_app_state.ws_server_config.connection_url.current_value == null) {
-    mwoe_app_state.ws_server_config.connection_url.current_value = mwoe_app_state.ws_server_config.connection_url.default_value;
+// src/ws-client/init-ws-client.ts
+function initWsClient(app_state) {
+  app_state.ws_server_config.connection_url.current_value = Spicetify.LocalStorage.get(app_state.ws_server_config.connection_url.local_storage_key) ?? undefined;
+  if (app_state.ws_server_config.connection_url.current_value == null) {
+    app_state.ws_server_config.connection_url.current_value = app_state.ws_server_config.connection_url.default_value;
   }
-  if (mwoe_app_state.ws_client.subject != null) {
-    mwoe_app_state.ws_client.retry_stop_flag.next("stop");
-    mwoe_app_state.ws_client.subject.unsubscribe();
-    mwoe_app_state.ws_client.retry_stop_flag = new Subject;
+  if (app_state.ws_client.subject != null) {
+    app_state.ws_client.retry_stop_flag.next("stop");
+    app_state.ws_client.subject.unsubscribe();
+    app_state.ws_client.retry_stop_flag = new Subject;
   }
-  const connection_url = mwoe_app_state.ws_server_config.connection_url.current_value;
-  mwoe_app_state.ws_client.subject = webSocket({
+  const connection_url = app_state.ws_server_config.connection_url.current_value;
+  app_state.ws_client.subject = webSocket({
     url: connection_url,
     deserializer: (msg) => msg.data,
     openObserver: {
       next: () => {
-        mwoe_app_state.logger(`Connected to WebSocket server with URL: ${connection_url}`);
+        app_state.logger(`Connected to WebSocket server with URL: ${connection_url}`);
       }
     }
   });
-  mwoe_app_state.ws_client.subject.pipe(takeUntil(mwoe_app_state.ws_client.retry_stop_flag), retry(1000)).subscribe({
+  app_state.ws_client.subject.pipe(takeUntil(app_state.ws_client.retry_stop_flag), retry(1000)).subscribe({
     next: () => {
-      if (mwoe_app_state.emission_mode.value !== "passive") {
+      if (app_state.emission_mode.value !== "passive") {
         return;
       }
-      mwoeSendTrackData(mwoe_app_state);
+      sendTrackData(app_state);
     },
     error: (err) => {
-      mwoe_app_state.logger(err);
-      mwoeInitWsClient(mwoe_app_state);
+      app_state.logger(err);
+      initWsClient(app_state);
     }
   });
-  if (mwoe_app_state.emission_mode.value !== "active") {
+  if (app_state.emission_mode.value !== "active") {
     return;
   }
 }
 
-// src/settings/mwoe-change-setting-ws-server-connection-url.ts
-function mwoeChangeSettingWsServerConnectionUrl(mwoe_app_state, submit_button_el) {
-  if (submit_button_el == null) {
-    return;
+// src/settings/settings-changer.ts
+class SettingsChanger {
+  static changeEmissionMode(app_state, submit_button_el) {
+    if (submit_button_el == null) {
+      return;
+    }
+    const select_el = submit_button_el.previousElementSibling?.previousElementSibling;
+    if (select_el == null) {
+      return;
+    }
+    const selected_emission_mode = select_el.value;
+    if (selected_emission_mode == null || selected_emission_mode === "") {
+      changeSubmitButtonState(submit_button_el, "error", "Please submit a non-empty value");
+      return;
+    }
+    Spicetify.LocalStorage.set(app_state.emission_mode.local_storage_key, selected_emission_mode);
+    app_state.emission_mode.value = selected_emission_mode;
+    changeSubmitButtonState(submit_button_el, "success");
   }
-  const input_el = submit_button_el.previousElementSibling?.previousElementSibling;
-  if (input_el == null) {
-    return;
-  }
-  mwoeChangeSubmitButtonState(submit_button_el, "applying");
-  const new_connection_url = input_el.value;
-  if (new_connection_url == null || new_connection_url === "") {
-    mwoeChangeSubmitButtonState(submit_button_el, "error", "Please submit a non-empty value");
-    return;
-  }
-  mwoe_app_state.ws_client.retry_stop_flag.next("stop");
-  mwoe_app_state.ws_client.subject?.unsubscribe();
-  const test_stop_flag = new Subject;
-  const test_ws_client = webSocket({
-    url: new_connection_url,
-    deserializer: (msg) => msg.data,
-    openObserver: {
-      next: () => {
-        mwoeChangeSubmitButtonState(submit_button_el, "success");
-        Spicetify.LocalStorage.set(mwoe_app_state.ws_server_config.connection_url.local_storage_key, new_connection_url);
-        mwoeInitWsClient(mwoe_app_state);
-        test_stop_flag.next("stop");
-      },
+  static changeWsServerConnectionUrl(app_state, submit_button_el) {
+    if (submit_button_el == null) {
+      return;
+    }
+    const input_el = submit_button_el.previousElementSibling?.previousElementSibling;
+    if (input_el == null) {
+      return;
+    }
+    changeSubmitButtonState(submit_button_el, "applying");
+    const new_connection_url = input_el.value;
+    if (new_connection_url == null || new_connection_url === "") {
+      changeSubmitButtonState(submit_button_el, "error", "Please submit a non-empty value");
+      return;
+    }
+    app_state.ws_client.retry_stop_flag.next("stop");
+    app_state.ws_client.subject?.unsubscribe();
+    const test_stop_flag = new Subject;
+    const test_ws_client = webSocket({
+      url: new_connection_url,
+      deserializer: (msg) => msg.data,
+      openObserver: {
+        next: () => {
+          changeSubmitButtonState(submit_button_el, "success");
+          Spicetify.LocalStorage.set(app_state.ws_server_config.connection_url.local_storage_key, new_connection_url);
+          initWsClient(app_state);
+          test_stop_flag.next("stop");
+        },
+        error: () => {
+          changeSubmitButtonState(submit_button_el, "error", "Connection error");
+          initWsClient(app_state);
+        }
+      }
+    });
+    test_ws_client.pipe(takeUntil(test_stop_flag), timeout(5000)).subscribe({
       error: () => {
-        mwoeChangeSubmitButtonState(submit_button_el, "error", "Connection error");
-        mwoeInitWsClient(mwoe_app_state);
+        changeSubmitButtonState(submit_button_el, "error", "Connection error");
+        initWsClient(app_state);
       }
-    }
-  });
-  test_ws_client.pipe(takeUntil(test_stop_flag), timeout(5000)).subscribe({
-    error: () => {
-      mwoeChangeSubmitButtonState(submit_button_el, "error", "Connection error");
-      mwoeInitWsClient(mwoe_app_state);
-    }
-  });
+    });
+  }
 }
 
-// src/app/mwoe-create-default-app-state.ts
-function mwoeCreateDefaultAppState() {
-  return {
-    app_name: "Magic Window: The Orange Emitter",
-    emission_mode: {
-      value: "active",
-      local_storage_key: "mwOrangeEmitter:emissionMode"
-    },
-    ws_server_config: {
-      connection_url: {
-        default_value: "ws-client://localhost:6603",
-        local_storage_key: "mwOrangeEmitter:wsServerConnectionUrl"
-      }
-    },
-    ws_client: {
-      retry_stop_flag: new Subject
-    },
-    logger: (item_list) => {
-      console.log("[MwOrangeEmitter]", item_list);
-    }
-  };
+// src/settings/settings-global-scope-helper.ts
+class SettingsGlobalScopeHelper {
+  static app_state;
+  static getFullyQualifiedNameForMemberFn(fn_name) {
+    return `${APP_GLOBAL_SYMBOL_NAME}.${SettingsGlobalScopeHelper.name}.${fn_name}`;
+  }
+  static changeEmissionMode(submit_button_el) {
+    if (SettingsGlobalScopeHelper.app_state == null)
+      return;
+    SettingsChanger.changeEmissionMode(SettingsGlobalScopeHelper.app_state, submit_button_el);
+  }
+  static changeWsServerConnectionUrl(submit_button_el) {
+    if (SettingsGlobalScopeHelper.app_state == null)
+      return;
+    SettingsChanger.changeWsServerConnectionUrl(SettingsGlobalScopeHelper.app_state, submit_button_el);
+  }
 }
 
-// src/settings/mwoe-open-settings-page.ts
-function mwoeOpenSettingsPage(app_state) {
+// src/settings/open-settings-page.ts
+function openSettingsPage(app_state) {
   const active_emission_mode_selected_attr = app_state.emission_mode.value === "active" ? " selected" : "";
   const passive_emission_mode_selected_attr = app_state.emission_mode.value === "passive" ? " selected" : "";
+  const change_mode_fn_str = SettingsGlobalScopeHelper.getFullyQualifiedNameForMemberFn("changeEmissionMode");
+  const change_connection_uri_fn_str = SettingsGlobalScopeHelper.getFullyQualifiedNameForMemberFn("changeWsServerConnectionUrl");
   Spicetify.PopupModal.display({
-    title: "Magic Window: The Orange Emitter · Settings",
+    title: "Get Track Info · Settings",
     isLarge: true,
     content: `
         <div>
-            <label for="mwOrangeEmitterMode" style="font-size: 1.1em">Emission Mode:</label>
-            <select name="mwOrangeEmitterMode"
+            <label for="mwGtiOrangeMode" style="font-size: 1.1em">Emission Mode:</label>
+            <select name="mwGtiOrangeMode"
               required
               style="
                 padding: 10px;
@@ -2101,7 +2127,7 @@ function mwoeOpenSettingsPage(app_state) {
                  <br>· The WebSocket server has to request the current track data by sending a message.
                  <br>· Track changes/data will not be emitted automatically.
             </div>
-              <button type="submit" onclick="mwoeRequestSettingChangeEmissionMode(this)"
+              <button type="submit" onclick="${change_mode_fn_str}(this)"
               onmouseenter="if(!this.disabled) this.style.backgroundColor='#333333'"
               onmouseleave="if(!this.disabled) this.style.backgroundColor='#515151'"
               style="
@@ -2120,8 +2146,8 @@ function mwoeOpenSettingsPage(app_state) {
             <br>
             <hr>
             <br>
-            <label for="mwOrangeEmitterWsServerPort" style="font-size: 1.1em">WebSocket Connection URL:</label>
-            <input type="text" name="mwOrangeEmitterWsServerPort"
+            <label for="mwGtiOrangeWsServerPort" style="font-size: 1.1em">WebSocket Connection URL:</label>
+            <input type="text" name="mwGtiOrangeWsServerPort"
               placeholder="E.g.: ${app_state.ws_server_config.connection_url.default_value}"
               value="${app_state.ws_server_config.connection_url.current_value}"
               style="
@@ -2137,7 +2163,7 @@ function mwoeOpenSettingsPage(app_state) {
                 In order to verify that a given URL is valid, a test connection is initiated.
                 Make sure your WebSocket server is up and running before trying to change this setting.
             </div>
-            <button type="submit" onclick="mwoeRequestSettingChangeWsServerConnectionUrl(this)"
+            <button type="submit" onclick="${change_connection_uri_fn_str}(this)"
               onmouseenter="if(!this.disabled) this.style.backgroundColor='#333333'"
               onmouseleave="if(!this.disabled) this.style.backgroundColor='#515151'"
               style="
@@ -2157,45 +2183,40 @@ function mwoeOpenSettingsPage(app_state) {
   });
 }
 
-// src/ws-client/mwoe-send-track-data-emission-mode-active.ts
-function mwoeSendTrackDataEmissionModeActive(mwoe_app_state) {
-  if (mwoe_app_state.emission_mode.value === "active") {
-    mwoeSendTrackData(mwoe_app_state);
+// src/ws-client/send-track-data-emission-mode-active.ts
+function sendTrackDataEmissionModeActive(app_state) {
+  if (app_state.emission_mode.value === "active") {
+    sendTrackData(app_state);
   }
 }
 
-// src/app/mwoe-main.ts
-function mwoeMain(mwoe_app_state) {
-  const saved_emission_mode = Spicetify.LocalStorage.get(mwoe_app_state.emission_mode.local_storage_key) ?? undefined;
+// src/app/main.ts
+function main(app_state) {
+  const saved_emission_mode = Spicetify.LocalStorage.get(app_state.emission_mode.local_storage_key) ?? undefined;
   if (saved_emission_mode != null) {
-    mwoe_app_state.emission_mode.value = saved_emission_mode;
+    app_state.emission_mode.value = saved_emission_mode;
   }
-  mwoeInitWsClient(mwoe_app_state);
-  const menu_item = new Spicetify.Menu.Item(mwoe_app_state.app_name, true, () => {
-    mwoeOpenSettingsPage(mwoe_app_state);
+  initWsClient(app_state);
+  const menu_item = new Spicetify.Menu.Item(app_state.app_name, true, () => {
+    openSettingsPage(app_state);
   }, "computer");
   menu_item.register();
   menu_item.setState(false);
-  Spicetify.Player.addEventListener("songchange", () => mwoeSendTrackDataEmissionModeActive(mwoe_app_state));
-  Spicetify.Player.addEventListener("onprogress", () => mwoeSendTrackDataEmissionModeActive(mwoe_app_state));
-  Spicetify.Player.addEventListener("onplaypause", () => mwoeSendTrackDataEmissionModeActive(mwoe_app_state));
+  Spicetify.Player.addEventListener("songchange", () => sendTrackDataEmissionModeActive(app_state));
+  Spicetify.Player.addEventListener("onprogress", () => sendTrackDataEmissionModeActive(app_state));
+  Spicetify.Player.addEventListener("onplaypause", () => sendTrackDataEmissionModeActive(app_state));
 }
 
 // src/app.ts
-var mwoe_app_state = mwoeCreateDefaultAppState();
-function mwoeRequestSettingChangeEmissionMode(submit_button_el) {
-  mwoeChangeSettingEmissionMode(mwoe_app_state, submit_button_el);
-}
-function mwoeRequestSettingChangeWsServerConnectionUrl(submit_button_el) {
-  mwoeChangeSettingWsServerConnectionUrl(mwoe_app_state, submit_button_el);
-}
-function mwoeLauncher() {
+var app_state = createDefaultAppState();
+SettingsGlobalScopeHelper.app_state = app_state;
+function launcher() {
   if (!Spicetify.Player || !Spicetify.Platform || !Spicetify.ReactJSX || !Spicetify.LocalStorage) {
-    setTimeout(mwoeLauncher, 100);
+    setTimeout(launcher, 100);
     return;
   }
-  mwoeRequestSettingChangeEmissionMode();
-  mwoeRequestSettingChangeWsServerConnectionUrl();
-  mwoeMain(mwoe_app_state);
+  main(app_state);
 }
-mwoeLauncher();
+launcher();
+
+return {SettingsGlobalScopeHelper: SettingsGlobalScopeHelper}})();

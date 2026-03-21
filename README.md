@@ -1,11 +1,11 @@
 ✨ **Part of the Magic Window series**
 
-# The Orange Emitter
+# Get Track Info
 Spicetify extension that emits track changes/data to an external WebSocket server.
 
 ## Quick Start
 * Just install the extension and start your WebSocket server on port 6603 to start listening for messages.
-* To access the settings page, click on your **Profile Icon** > **Magic Window: The Orange Emitter**.
+* To access the settings page, click on your **Profile Icon** > **Get Track Info**.
 
 ## Main Features
 
