@@ -50,37 +50,37 @@ Once installed, the extension will continuously try to reach your server at 1-se
 ```
 {
   "status": "ok",
-  "request_id": "de31a0d4-2105-40cc-a603-6c6a3bf0dfdf",
-  "track_id": "185056144973e04c9b21",
-  "artist_full": "Bad Bunny, Chuwi",
+  "request_id": "e1c1434e-cc68-4368-9dba-2dd84e4c5e05",
+  "track_id": "dac674b1bb02a9c3eb96",
+  "artist_full": "Bad Bunny, The Marías",
   "data": {
     "type": "track",
-    "uri": "spotify:track:5WEF0icHWmAZBBMglBd599",
-    "uid": "185056144973e04c9b21",
-    "name": "WELTiTA",
+    "uri": "spotify:track:0E0DRHf5PfMeor0ZCwB3oT",
+    "uid": "dac674b1bb02a9c3eb96",
+    "name": "Otro Atardecer",
     "mediaType": "audio",
     "duration": {
-      "milliseconds": 188000
+      "milliseconds": 244000
     },
     "album": {
       "type": "album",
-      "uri": "spotify:album:5K79FLRUCSysQnVESLcTdb",
-      "name": "DeBÍ TiRAR MáS FOToS",
+      "uri": "spotify:album:3RQQmkQEvNCY4prGKE6oc5",
+      "name": "Un Verano Sin Ti",
       "images": [
         {
-          "url": "spotify:image:ab67616d00001e02bbd45c8d36e0e045ef640411",
+          "url": "spotify:image:ab67616d00001e0249d694203245f241a1bcaa72",
           "label": "standard"
         },
         {
-          "url": "spotify:image:ab67616d00004851bbd45c8d36e0e045ef640411",
+          "url": "spotify:image:ab67616d0000485149d694203245f241a1bcaa72",
           "label": "small"
         },
         {
-          "url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
+          "url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
           "label": "large"
         },
         {
-          "url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
+          "url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
           "label": "xlarge"
         }
       ]
@@ -93,85 +93,74 @@ Once installed, the extension will continuously try to reach your server at 1-se
       },
       {
         "type": "artist",
-        "uri": "spotify:artist:6wF1Cz760dpdbX9RJIDpQW",
-        "name": "Chuwi"
+        "uri": "spotify:artist:2sSGPbdZJkaSE2AbcGOACx",
+        "name": "The Marías"
       }
     ],
     "isLocal": false,
     "isExplicit": false,
     "is19PlusOnly": false,
-    "hasAssociatedVideo": true,
+    "hasAssociatedVideo": false,
     "provider": "context",
     "metadata": {
-      "canvas.uploadedBy": "artist",
-      "image_url": "spotify:image:ab67616d00001e02bbd45c8d36e0e045ef640411",
-      "popularity": "88",
-      "track_player": "audio",
-      "video_association_image_large": "ab6742d3000052b7731d4c53006e50f4caa1da56",
-      "video_association_image_xxlarge": "ab6742d3000053b7731d4c53006e50f4caa1da56",
-      "collection.in_collection": "false",
-      "canvas.entityUri": "spotify:track:5WEF0icHWmAZBBMglBd599",
-      "video_association_image_height": "720",
-      "album_artist_name": "Bad Bunny",
-      "image_small_url": "spotify:image:ab67616d00004851bbd45c8d36e0e045ef640411",
-      "artist_uri": "spotify:artist:4q3ewBCX7sLwd24euuV69X",
+      "context_uri": "spotify:track:0E0DRHf5PfMeor0ZCwB3oT",
       "artist_name": "Bad Bunny",
-      "album_uri": "spotify:album:5K79FLRUCSysQnVESLcTdb",
-      "artist_name:1": "Chuwi",
-      "actions.skipping_next_past_track": "resume",
-      "context_uri": "spotify:track:5WEF0icHWmAZBBMglBd599",
-      "actions.skipping_prev_past_track": "resume",
-      "video_association_image_width": "1280",
-      "album_track_count": "0",
-      "canvas.artist.avatar": "https://open.spotify.com/image/ab6761610000f17881f47f44084e0a09b5f0fa13",
-      "video_association_image_height_large": "360",
-      "canvas.canvasUri": "spotify:canvas:73WzOHnEh2Xwwc7vAGdKE1",
-      "collection.can_add": "true",
-      "video_association_image_height_xxlarge": "720",
-      "canvas.id": "e816aa309de44a6e9f2514d411cdb961",
-      "album_disc_number": "1",
-      "canvas.artist.name": "Bad Bunny",
-      "video_association_image_width_large": "640",
-      "video_association_image": "ab6742d3000053b7731d4c53006e50f4caa1da56",
-      "album_track_number": "5",
-      "title": "WELTiTA",
-      "album_title": "DeBÍ TiRAR MáS FOToS",
-      "marked_for_download": "false",
-      "view_index": "0",
-      "video_association": "spotify:track:7FsBmFUgqVnOOOuiw0cKGL",
-      "canvas.url": "https://canvaz.scdn.co/upload/artist/4q3ewBCX7sLwd24euuV69X/video/e816aa309de44a6e9f2514d411cdb961.cnvs.mp4",
-      "artist_uri:1": "spotify:artist:6wF1Cz760dpdbX9RJIDpQW",
-      "album_disc_count": "1",
-      "entity_uri": "spotify:track:5WEF0icHWmAZBBMglBd599",
-      "video_association_image_width_xxlarge": "1280",
-      "has_lyrics": "true",
-      "canvas.explicit": "false",
-      "canvas.type": "VIDEO_LOOPING_RANDOM",
-      "collection.can_ban": "true",
-      "associated_video_id": "0f073102176d49b8bb56b8e3c1a5eb5f",
-      "image_xlarge_url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
-      "iteration": "0",
-      "image_large_url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
-      "collection.is_banned": "false",
-      "duration": "188000",
       "canvas.artist.uri": "spotify:artist:4q3ewBCX7sLwd24euuV69X",
-      "canvas.fileId": "ddf57e463b653a7d80d254fe6267124c"
+      "album_track_number": "17",
+      "canvas.id": "f331f98c9f3c41f8ab48189596ad6784",
+      "has_lyrics": "true",
+      "track_player": "audio",
+      "canvas.uploadedBy": "artist",
+      "collection.can_add": "true",
+      "iteration": "0",
+      "canvas.url": "https://canvaz.scdn.co/upload/artist/4q3ewBCX7sLwd24euuV69X/video/f331f98c9f3c41f8ab48189596ad6784.cnvs.mp4",
+      "collection.can_ban": "true",
+      "album_uri": "spotify:album:3RQQmkQEvNCY4prGKE6oc5",
+      "album_disc_number": "1",
+      "canvas.entityUri": "spotify:track:0E0DRHf5PfMeor0ZCwB3oT",
+      "album_artist_name": "Bad Bunny",
+      "actions.skipping_prev_past_track": "resume",
+      "entity_uri": "spotify:track:0E0DRHf5PfMeor0ZCwB3oT",
+      "canvas.canvasUri": "spotify:canvas:7oTYo4VjzqTbov0JzFkl1y",
+      "title": "Otro Atardecer",
+      "album_track_count": "0",
+      "album_title": "Un Verano Sin Ti",
+      "canvas.artist.name": "Bad Bunny",
+      "view_index": "0",
+      "artist_uri:1": "spotify:artist:2sSGPbdZJkaSE2AbcGOACx",
+      "artist_uri": "spotify:artist:4q3ewBCX7sLwd24euuV69X",
+      "marked_for_download": "false",
+      "canvas.explicit": "false",
+      "popularity": "83",
+      "canvas.fileId": "21250daac04b315a96e0afddea25e5d7",
+      "image_large_url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
+      "canvas.artist.avatar": "https://open.spotify.com/image/ab6761610000f17881f47f44084e0a09b5f0fa13",
+      "canvas.type": "VIDEO_LOOPING_RANDOM",
+      "image_url": "spotify:image:ab67616d00001e0249d694203245f241a1bcaa72",
+      "duration": "244000",
+      "image_small_url": "spotify:image:ab67616d0000485149d694203245f241a1bcaa72",
+      "collection.in_collection": "false",
+      "artist_name:1": "The Marías",
+      "collection.is_banned": "false",
+      "actions.skipping_next_past_track": "resume",
+      "image_xlarge_url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
+      "album_disc_count": "1"
     },
     "images": [
       {
-        "url": "spotify:image:ab67616d00001e02bbd45c8d36e0e045ef640411",
+        "url": "spotify:image:ab67616d00001e0249d694203245f241a1bcaa72",
         "label": "standard"
       },
       {
-        "url": "spotify:image:ab67616d00004851bbd45c8d36e0e045ef640411",
+        "url": "spotify:image:ab67616d0000485149d694203245f241a1bcaa72",
         "label": "small"
       },
       {
-        "url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
+        "url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
         "label": "large"
       },
       {
-        "url": "spotify:image:ab67616d0000b273bbd45c8d36e0e045ef640411",
+        "url": "spotify:image:ab67616d0000b27349d694203245f241a1bcaa72",
         "label": "xlarge"
       }
     ]
