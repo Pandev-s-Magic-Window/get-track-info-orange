@@ -1,5 +1,6 @@
 {
   "name": "Get Track Info",
+  "version": "1.2.0",
   "description": "Emits track changes/data to an external WebSocket server",
   "preview": "preview.png",
   "main": "mw-get-track-info-orange.js",
