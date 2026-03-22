@@ -1,7 +1,7 @@
 import type {AppState} from "../app/app-state";
 
-import {APP_GLOBAL_SYMBOL_NAME} from "../app/app-global-symbol-name.ts";
-import {SettingsChanger} from "./settings-changer.ts";
+import {APP_GLOBAL_SYMBOL_NAME} from "../app/app-global-symbol-name";
+import {SettingsChanger} from "./settings-changer";
 
 // Type for all member functions that can perform a setting change.
 type SettingsGlobalScopeHelperFn =

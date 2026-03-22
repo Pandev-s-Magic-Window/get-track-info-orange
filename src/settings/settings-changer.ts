@@ -1,8 +1,8 @@
-import type {AppState} from "../app/app-state.ts";
-import {changeSubmitButtonState} from "./change-submit-button-state.ts";
+import type {AppState} from "../app/app-state";
+import {changeSubmitButtonState} from "./change-submit-button-state";
 import {Subject, takeUntil, timeout} from "rxjs";
 import {webSocket} from "rxjs/webSocket";
-import {initWsClient} from "../ws-client/init-ws-client.ts";
+import {initWsClient} from "../ws-client/init-ws-client";
 
 export class SettingsChanger {
   static changeEmissionMode(
