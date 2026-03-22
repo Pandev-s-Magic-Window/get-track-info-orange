@@ -961,23 +961,233 @@ var AnonymousSubject = function(_super) {
   };
   return AnonymousSubject2;
 }(Subject);
-// node_modules/rxjs/dist/esm5/internal/util/lift.js
-function hasLift(source) {
-  return isFunction(source === null || source === undefined ? undefined : source.lift);
+// node_modules/rxjs/dist/esm5/internal/util/isArrayLike.js
+var isArrayLike = function(x) {
+  return x && typeof x.length === "number" && typeof x !== "function";
+};
+
+// node_modules/rxjs/dist/esm5/internal/util/isPromise.js
+function isPromise(value) {
+  return isFunction(value === null || value === undefined ? undefined : value.then);
 }
-function operate(init) {
-  return function(source) {
-    if (hasLift(source)) {
-      return source.lift(function(liftedSource) {
-        try {
-          return init(liftedSource, this);
-        } catch (err) {
-          this.error(err);
-        }
-      });
+
+// node_modules/rxjs/dist/esm5/internal/util/isInteropObservable.js
+function isInteropObservable(input) {
+  return isFunction(input[observable]);
+}
+
+// node_modules/rxjs/dist/esm5/internal/util/isAsyncIterable.js
+function isAsyncIterable(obj) {
+  return Symbol.asyncIterator && isFunction(obj === null || obj === undefined ? undefined : obj[Symbol.asyncIterator]);
+}
+
+// node_modules/rxjs/dist/esm5/internal/util/throwUnobservableError.js
+function createInvalidObservableTypeError(input) {
+  return new TypeError("You provided " + (input !== null && typeof input === "object" ? "an invalid object" : "'" + input + "'") + " where a stream was expected. You can provide an Observable, Promise, ReadableStream, Array, AsyncIterable, or Iterable.");
+}
+
+// node_modules/rxjs/dist/esm5/internal/symbol/iterator.js
+function getSymbolIterator() {
+  if (typeof Symbol !== "function" || !Symbol.iterator) {
+    return "@@iterator";
+  }
+  return Symbol.iterator;
+}
+var iterator = getSymbolIterator();
+
+// node_modules/rxjs/dist/esm5/internal/util/isIterable.js
+function isIterable(input) {
+  return isFunction(input === null || input === undefined ? undefined : input[iterator]);
+}
+
+// node_modules/rxjs/dist/esm5/internal/util/isReadableStreamLike.js
+function readableStreamLikeToAsyncGenerator(readableStream) {
+  return __asyncGenerator(this, arguments, function readableStreamLikeToAsyncGenerator_1() {
+    var reader, _a, value, done;
+    return __generator(this, function(_b) {
+      switch (_b.label) {
+        case 0:
+          reader = readableStream.getReader();
+          _b.label = 1;
+        case 1:
+          _b.trys.push([1, , 9, 10]);
+          _b.label = 2;
+        case 2:
+          if (false)
+            ;
+          return [4, __await(reader.read())];
+        case 3:
+          _a = _b.sent(), value = _a.value, done = _a.done;
+          if (!done)
+            return [3, 5];
+          return [4, __await(undefined)];
+        case 4:
+          return [2, _b.sent()];
+        case 5:
+          return [4, __await(value)];
+        case 6:
+          return [4, _b.sent()];
+        case 7:
+          _b.sent();
+          return [3, 2];
+        case 8:
+          return [3, 10];
+        case 9:
+          reader.releaseLock();
+          return [7];
+        case 10:
+          return [2];
+      }
+    });
+  });
+}
+function isReadableStreamLike(obj) {
+  return isFunction(obj === null || obj === undefined ? undefined : obj.getReader);
+}
+
+// node_modules/rxjs/dist/esm5/internal/observable/innerFrom.js
+function innerFrom(input) {
+  if (input instanceof Observable) {
+    return input;
+  }
+  if (input != null) {
+    if (isInteropObservable(input)) {
+      return fromInteropObservable(input);
     }
-    throw new TypeError("Unable to lift unknown Observable type");
-  };
+    if (isArrayLike(input)) {
+      return fromArrayLike(input);
+    }
+    if (isPromise(input)) {
+      return fromPromise(input);
+    }
+    if (isAsyncIterable(input)) {
+      return fromAsyncIterable(input);
+    }
+    if (isIterable(input)) {
+      return fromIterable(input);
+    }
+    if (isReadableStreamLike(input)) {
+      return fromReadableStreamLike(input);
+    }
+  }
+  throw createInvalidObservableTypeError(input);
+}
+function fromInteropObservable(obj) {
+  return new Observable(function(subscriber) {
+    var obs = obj[observable]();
+    if (isFunction(obs.subscribe)) {
+      return obs.subscribe(subscriber);
+    }
+    throw new TypeError("Provided object does not correctly implement Symbol.observable");
+  });
+}
+function fromArrayLike(array) {
+  return new Observable(function(subscriber) {
+    for (var i = 0;i < array.length && !subscriber.closed; i++) {
+      subscriber.next(array[i]);
+    }
+    subscriber.complete();
+  });
+}
+function fromPromise(promise) {
+  return new Observable(function(subscriber) {
+    promise.then(function(value) {
+      if (!subscriber.closed) {
+        subscriber.next(value);
+        subscriber.complete();
+      }
+    }, function(err) {
+      return subscriber.error(err);
+    }).then(null, reportUnhandledError);
+  });
+}
+function fromIterable(iterable) {
+  return new Observable(function(subscriber) {
+    var e_1, _a;
+    try {
+      for (var iterable_1 = __values(iterable), iterable_1_1 = iterable_1.next();!iterable_1_1.done; iterable_1_1 = iterable_1.next()) {
+        var value = iterable_1_1.value;
+        subscriber.next(value);
+        if (subscriber.closed) {
+          return;
+        }
+      }
+    } catch (e_1_1) {
+      e_1 = { error: e_1_1 };
+    } finally {
+      try {
+        if (iterable_1_1 && !iterable_1_1.done && (_a = iterable_1.return))
+          _a.call(iterable_1);
+      } finally {
+        if (e_1)
+          throw e_1.error;
+      }
+    }
+    subscriber.complete();
+  });
+}
+function fromAsyncIterable(asyncIterable) {
+  return new Observable(function(subscriber) {
+    process(asyncIterable, subscriber).catch(function(err) {
+      return subscriber.error(err);
+    });
+  });
+}
+function fromReadableStreamLike(readableStream) {
+  return fromAsyncIterable(readableStreamLikeToAsyncGenerator(readableStream));
+}
+function process(asyncIterable, subscriber) {
+  var asyncIterable_1, asyncIterable_1_1;
+  var e_2, _a;
+  return __awaiter(this, undefined, undefined, function() {
+    var value, e_2_1;
+    return __generator(this, function(_b) {
+      switch (_b.label) {
+        case 0:
+          _b.trys.push([0, 5, 6, 11]);
+          asyncIterable_1 = __asyncValues(asyncIterable);
+          _b.label = 1;
+        case 1:
+          return [4, asyncIterable_1.next()];
+        case 2:
+          if (!(asyncIterable_1_1 = _b.sent(), !asyncIterable_1_1.done))
+            return [3, 4];
+          value = asyncIterable_1_1.value;
+          subscriber.next(value);
+          if (subscriber.closed) {
+            return [2];
+          }
+          _b.label = 3;
+        case 3:
+          return [3, 1];
+        case 4:
+          return [3, 11];
+        case 5:
+          e_2_1 = _b.sent();
+          e_2 = { error: e_2_1 };
+          return [3, 11];
+        case 6:
+          _b.trys.push([6, , 9, 10]);
+          if (!(asyncIterable_1_1 && !asyncIterable_1_1.done && (_a = asyncIterable_1.return)))
+            return [3, 8];
+          return [4, _a.call(asyncIterable_1)];
+        case 7:
+          _b.sent();
+          _b.label = 8;
+        case 8:
+          return [3, 10];
+        case 9:
+          if (e_2)
+            throw e_2.error;
+          return [7];
+        case 10:
+          return [7];
+        case 11:
+          subscriber.complete();
+          return [2];
+      }
+    });
+  });
 }
 
 // node_modules/rxjs/dist/esm5/internal/operators/OperatorSubscriber.js
@@ -1028,6 +1238,48 @@ var OperatorSubscriber = function(_super) {
   return OperatorSubscriber2;
 }(Subscriber);
 
+// node_modules/rxjs/dist/esm5/internal/util/lift.js
+function hasLift(source) {
+  return isFunction(source === null || source === undefined ? undefined : source.lift);
+}
+function operate(init) {
+  return function(source) {
+    if (hasLift(source)) {
+      return source.lift(function(liftedSource) {
+        try {
+          return init(liftedSource, this);
+        } catch (err) {
+          this.error(err);
+        }
+      });
+    }
+    throw new TypeError("Unable to lift unknown Observable type");
+  };
+}
+
+// node_modules/rxjs/dist/esm5/internal/operators/catchError.js
+function catchError(selector) {
+  return operate(function(source, subscriber) {
+    var innerSub = null;
+    var syncUnsub = false;
+    var handledResult;
+    innerSub = source.subscribe(createOperatorSubscriber(subscriber, undefined, undefined, function(err) {
+      handledResult = innerFrom(selector(err, catchError(selector)(source)));
+      if (innerSub) {
+        innerSub.unsubscribe();
+        innerSub = null;
+        handledResult.subscribe(subscriber);
+      } else {
+        syncUnsub = true;
+      }
+    }));
+    if (syncUnsub) {
+      innerSub.unsubscribe();
+      innerSub = null;
+      handledResult.subscribe(subscriber);
+    }
+  });
+}
 // node_modules/rxjs/dist/esm5/internal/scheduler/Action.js
 var Action = function(_super) {
   __extends(Action2, _super);
@@ -1265,235 +1517,6 @@ function timer(dueTime, intervalOrScheduler, scheduler) {
   });
 }
 
-// node_modules/rxjs/dist/esm5/internal/util/isArrayLike.js
-var isArrayLike = function(x) {
-  return x && typeof x.length === "number" && typeof x !== "function";
-};
-
-// node_modules/rxjs/dist/esm5/internal/util/isPromise.js
-function isPromise(value) {
-  return isFunction(value === null || value === undefined ? undefined : value.then);
-}
-
-// node_modules/rxjs/dist/esm5/internal/util/isInteropObservable.js
-function isInteropObservable(input) {
-  return isFunction(input[observable]);
-}
-
-// node_modules/rxjs/dist/esm5/internal/util/isAsyncIterable.js
-function isAsyncIterable(obj) {
-  return Symbol.asyncIterator && isFunction(obj === null || obj === undefined ? undefined : obj[Symbol.asyncIterator]);
-}
-
-// node_modules/rxjs/dist/esm5/internal/util/throwUnobservableError.js
-function createInvalidObservableTypeError(input) {
-  return new TypeError("You provided " + (input !== null && typeof input === "object" ? "an invalid object" : "'" + input + "'") + " where a stream was expected. You can provide an Observable, Promise, ReadableStream, Array, AsyncIterable, or Iterable.");
-}
-
-// node_modules/rxjs/dist/esm5/internal/symbol/iterator.js
-function getSymbolIterator() {
-  if (typeof Symbol !== "function" || !Symbol.iterator) {
-    return "@@iterator";
-  }
-  return Symbol.iterator;
-}
-var iterator = getSymbolIterator();
-
-// node_modules/rxjs/dist/esm5/internal/util/isIterable.js
-function isIterable(input) {
-  return isFunction(input === null || input === undefined ? undefined : input[iterator]);
-}
-
-// node_modules/rxjs/dist/esm5/internal/util/isReadableStreamLike.js
-function readableStreamLikeToAsyncGenerator(readableStream) {
-  return __asyncGenerator(this, arguments, function readableStreamLikeToAsyncGenerator_1() {
-    var reader, _a, value, done;
-    return __generator(this, function(_b) {
-      switch (_b.label) {
-        case 0:
-          reader = readableStream.getReader();
-          _b.label = 1;
-        case 1:
-          _b.trys.push([1, , 9, 10]);
-          _b.label = 2;
-        case 2:
-          if (false)
-            ;
-          return [4, __await(reader.read())];
-        case 3:
-          _a = _b.sent(), value = _a.value, done = _a.done;
-          if (!done)
-            return [3, 5];
-          return [4, __await(undefined)];
-        case 4:
-          return [2, _b.sent()];
-        case 5:
-          return [4, __await(value)];
-        case 6:
-          return [4, _b.sent()];
-        case 7:
-          _b.sent();
-          return [3, 2];
-        case 8:
-          return [3, 10];
-        case 9:
-          reader.releaseLock();
-          return [7];
-        case 10:
-          return [2];
-      }
-    });
-  });
-}
-function isReadableStreamLike(obj) {
-  return isFunction(obj === null || obj === undefined ? undefined : obj.getReader);
-}
-
-// node_modules/rxjs/dist/esm5/internal/observable/innerFrom.js
-function innerFrom(input) {
-  if (input instanceof Observable) {
-    return input;
-  }
-  if (input != null) {
-    if (isInteropObservable(input)) {
-      return fromInteropObservable(input);
-    }
-    if (isArrayLike(input)) {
-      return fromArrayLike(input);
-    }
-    if (isPromise(input)) {
-      return fromPromise(input);
-    }
-    if (isAsyncIterable(input)) {
-      return fromAsyncIterable(input);
-    }
-    if (isIterable(input)) {
-      return fromIterable(input);
-    }
-    if (isReadableStreamLike(input)) {
-      return fromReadableStreamLike(input);
-    }
-  }
-  throw createInvalidObservableTypeError(input);
-}
-function fromInteropObservable(obj) {
-  return new Observable(function(subscriber) {
-    var obs = obj[observable]();
-    if (isFunction(obs.subscribe)) {
-      return obs.subscribe(subscriber);
-    }
-    throw new TypeError("Provided object does not correctly implement Symbol.observable");
-  });
-}
-function fromArrayLike(array) {
-  return new Observable(function(subscriber) {
-    for (var i = 0;i < array.length && !subscriber.closed; i++) {
-      subscriber.next(array[i]);
-    }
-    subscriber.complete();
-  });
-}
-function fromPromise(promise) {
-  return new Observable(function(subscriber) {
-    promise.then(function(value) {
-      if (!subscriber.closed) {
-        subscriber.next(value);
-        subscriber.complete();
-      }
-    }, function(err) {
-      return subscriber.error(err);
-    }).then(null, reportUnhandledError);
-  });
-}
-function fromIterable(iterable) {
-  return new Observable(function(subscriber) {
-    var e_1, _a;
-    try {
-      for (var iterable_1 = __values(iterable), iterable_1_1 = iterable_1.next();!iterable_1_1.done; iterable_1_1 = iterable_1.next()) {
-        var value = iterable_1_1.value;
-        subscriber.next(value);
-        if (subscriber.closed) {
-          return;
-        }
-      }
-    } catch (e_1_1) {
-      e_1 = { error: e_1_1 };
-    } finally {
-      try {
-        if (iterable_1_1 && !iterable_1_1.done && (_a = iterable_1.return))
-          _a.call(iterable_1);
-      } finally {
-        if (e_1)
-          throw e_1.error;
-      }
-    }
-    subscriber.complete();
-  });
-}
-function fromAsyncIterable(asyncIterable) {
-  return new Observable(function(subscriber) {
-    process(asyncIterable, subscriber).catch(function(err) {
-      return subscriber.error(err);
-    });
-  });
-}
-function fromReadableStreamLike(readableStream) {
-  return fromAsyncIterable(readableStreamLikeToAsyncGenerator(readableStream));
-}
-function process(asyncIterable, subscriber) {
-  var asyncIterable_1, asyncIterable_1_1;
-  var e_2, _a;
-  return __awaiter(this, undefined, undefined, function() {
-    var value, e_2_1;
-    return __generator(this, function(_b) {
-      switch (_b.label) {
-        case 0:
-          _b.trys.push([0, 5, 6, 11]);
-          asyncIterable_1 = __asyncValues(asyncIterable);
-          _b.label = 1;
-        case 1:
-          return [4, asyncIterable_1.next()];
-        case 2:
-          if (!(asyncIterable_1_1 = _b.sent(), !asyncIterable_1_1.done))
-            return [3, 4];
-          value = asyncIterable_1_1.value;
-          subscriber.next(value);
-          if (subscriber.closed) {
-            return [2];
-          }
-          _b.label = 3;
-        case 3:
-          return [3, 1];
-        case 4:
-          return [3, 11];
-        case 5:
-          e_2_1 = _b.sent();
-          e_2 = { error: e_2_1 };
-          return [3, 11];
-        case 6:
-          _b.trys.push([6, , 9, 10]);
-          if (!(asyncIterable_1_1 && !asyncIterable_1_1.done && (_a = asyncIterable_1.return)))
-            return [3, 8];
-          return [4, _a.call(asyncIterable_1)];
-        case 7:
-          _b.sent();
-          _b.label = 8;
-        case 8:
-          return [3, 10];
-        case 9:
-          if (e_2)
-            throw e_2.error;
-          return [7];
-        case 10:
-          return [7];
-        case 11:
-          subscriber.complete();
-          return [2];
-      }
-    });
-  });
-}
-
 // node_modules/rxjs/dist/esm5/internal/operators/retry.js
 function retry(configOrCount) {
   if (configOrCount === undefined) {
@@ -1655,8 +1678,8 @@ function createDefaultAppState() {
     ws_client: {
       retry_stop_flag: new Subject
     },
-    logger: (item_list) => {
-      console.log("[MwGtiOrange]", item_list);
+    logger: (...item_list) => {
+      console.log("[MwGtiOrange]", ...item_list);
     }
   };
 }
@@ -1967,12 +1990,25 @@ function webSocket(urlConfigOrSource) {
   return new WebSocketSubject(urlConfigOrSource);
 }
 // src/ws-client/send-track-data.ts
-function sendTrackData(app_state) {
+function sendTrackData(app_state, request_id) {
   const track_data = Spicetify.Player.data?.item;
   if (track_data == null) {
     return;
   }
-  app_state.ws_client.subject?.next(JSON.stringify(track_data));
+  const artist_full = track_data.artists?.map((artist) => artist.name).join(", ") ?? "";
+  const msg = {
+    status: "ok",
+    request_id: request_id ?? null,
+    track_id: track_data.uid,
+    artist_full,
+    data: track_data
+  };
+  app_state.ws_client.subject?.next(msg);
+}
+
+// src/ws-client/is-ws-message-from-server.ts
+function isWsMessageFromServer(data) {
+  return data.request_id !== undefined;
 }
 
 // src/ws-client/init-ws-client.ts
@@ -1989,24 +2025,34 @@ function initWsClient(app_state) {
   const connection_url = app_state.ws_server_config.connection_url.current_value;
   app_state.ws_client.subject = webSocket({
     url: connection_url,
-    deserializer: (msg) => msg.data,
     openObserver: {
       next: () => {
         app_state.logger(`Connected to WebSocket server with URL: ${connection_url}`);
-      }
+      },
+      error: (err) => app_state.logger("Connection ended prematurely:", err),
+      complete: () => app_state.logger("Connection ended by server")
     }
   });
-  app_state.ws_client.subject.pipe(takeUntil(app_state.ws_client.retry_stop_flag), retry(1000)).subscribe({
-    next: () => {
+  app_state.ws_client.subject.pipe(takeUntil(app_state.ws_client.retry_stop_flag), catchError((err) => {
+    app_state.logger("Connection ended prematurely:", err);
+    throw err;
+  }), retry(1000)).subscribe({
+    next: (data) => {
+      app_state.logger("Received from server:", data);
+      let request_id = null;
+      if (isWsMessageFromServer(data)) {
+        request_id = data.request_id ?? null;
+      }
       if (app_state.emission_mode.value !== "passive") {
         return;
       }
-      sendTrackData(app_state);
+      sendTrackData(app_state, request_id);
     },
     error: (err) => {
-      app_state.logger(err);
+      app_state.logger("Connection ended prematurely:", err);
       initWsClient(app_state);
-    }
+    },
+    complete: () => app_state.logger("Connection ended by server")
   });
   if (app_state.emission_mode.value !== "active") {
     return;
@@ -2051,7 +2097,6 @@ class SettingsChanger {
     const test_stop_flag = new Subject;
     const test_ws_client = webSocket({
       url: new_connection_url,
-      deserializer: (msg) => msg.data,
       openObserver: {
         next: () => {
           changeSubmitButtonState(submit_button_el, "success");
@@ -2186,7 +2231,7 @@ function openSettingsPage(app_state) {
 // src/ws-client/send-track-data-emission-mode-active.ts
 function sendTrackDataEmissionModeActive(app_state) {
   if (app_state.emission_mode.value === "active") {
-    sendTrackData(app_state);
+    sendTrackData(app_state, null);
   }
 }
 
