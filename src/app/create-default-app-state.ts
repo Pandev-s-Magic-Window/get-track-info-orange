@@ -21,8 +21,8 @@ export function createDefaultAppState(): AppState {
       retry_stop_flag: new Subject<string>(),
     },
 
-    logger: (item_list) => {
-      console.log('[MwGtiOrange]', item_list);
+    logger: (...item_list) => {
+      console.log('[MwGtiOrange]', ...item_list);
     }
   }
 }

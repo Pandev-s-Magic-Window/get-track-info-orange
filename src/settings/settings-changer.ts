@@ -3,6 +3,8 @@ import {changeSubmitButtonState} from "./change-submit-button-state";
 import {Subject, takeUntil, timeout} from "rxjs";
 import {webSocket} from "rxjs/webSocket";
 import {initWsClient} from "../ws-client/init-ws-client";
+import type {WsMessageFromClient} from "../ws-client/ws-message-from-client";
+import type {WsMessageFromServer} from "../ws-client/ws-message-from-server";
 
 export class SettingsChanger {
   static changeEmissionMode(
@@ -61,9 +63,8 @@ export class SettingsChanger {
 
     // Prepare a test connection to see if the URL is valid
     const test_stop_flag = new Subject<string>();
-    const test_ws_client = webSocket<string>({
+    const test_ws_client = webSocket<WsMessageFromClient | WsMessageFromServer>({
       url: new_connection_url,
-      deserializer: msg => msg.data,
       openObserver: {
         next: () => {
           changeSubmitButtonState(submit_button_el, "success");
