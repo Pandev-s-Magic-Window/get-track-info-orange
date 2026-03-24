@@ -57,7 +57,7 @@ If you happen to need data not currently in the default payload, you can access 
 {
   "status": "ok",
   "player_track_progress_ms": 8822,
-  "request_id": null,
+  "request_id": "YOUR_REQUEST_ID",
   "data": {
     "track_id": "0E0DRHf5PfMeor0ZCwB3oT",
     "track_name": "Otro Atardecer",
