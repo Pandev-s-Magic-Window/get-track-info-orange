@@ -44,7 +44,7 @@ export function initApp(app_state: AppState) {
     }
     sendTrackDataEmissionModeActive(app_state)
   });
-  Spicetify.Player.addEventListener("onprogress", (e) => {
+  Spicetify.Player.addEventListener("onprogress", () => {
     // Source of truth is always the player track
     const player_track = getCurrentPlayerPlayerTrack();
     if (player_track == null) {

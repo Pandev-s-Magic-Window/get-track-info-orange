@@ -28,7 +28,6 @@ export class TrackInfo {
     if (track_data_from_graphql != null) {
       main_artist = track_data_from_graphql.artist_name;
     } else if (artists != null && artists.length > 0) {
-      console.log(artists)
       main_artist = artists.shift()?.name ?? TrackInfo.unknown_artist_name;
     }
 

@@ -2,7 +2,6 @@ import {Subject} from "rxjs";
 import type {AppState} from "./app-state";
 
 export function createDefaultAppState(): AppState {
-  console.log("createDefaultAppState");
   return {
     app_name: "Get Track Info",
 
