@@ -102,4 +102,34 @@ export class SettingsChanger {
     });
   }
 
+  static changeIncludeExtraDataUrl(
+    app_state: AppState,
+    submit_button_el?: HTMLButtonElement) {
+    if (submit_button_el == null) {
+      return;
+    }
+
+    const select_el = submit_button_el.previousElementSibling?.previousElementSibling as HTMLSelectElement | null | undefined;
+    if (select_el == null) {
+      return;
+    }
+
+    const selected_option = select_el.value;
+    if (selected_option == null || selected_option === "") {
+      changeSubmitButtonState(submit_button_el, "error", "Please submit a non-empty value");
+      return;
+    }
+
+    // Save the new emission mode
+    Spicetify.LocalStorage.set(
+      app_state.include_extra_data_f.local_storage_key,
+      selected_option
+    );
+    app_state.include_extra_data_f.value = selected_option as typeof app_state.include_extra_data_f.value;
+
+    // Delete the current track cache
+    app_state.track_info_cache = new Map();
+
+    changeSubmitButtonState(submit_button_el, "success");
+  }
 }

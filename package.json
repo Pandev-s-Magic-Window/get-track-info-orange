@@ -7,15 +7,21 @@
   "scripts": {
     "build": "bun ./bun/build.ts",
     "apply": "bun ./bun/apply.ts",
-    "server": "bun src/ws-server/mockup-server.ts --port 6603"
+    "build-apply": "bun run build && bun run apply",
+    "server": "bun src/ws-server/mockup-server.ts --port 6603",
+    "prepare": "ts-patch install"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@typia/unplugin": "12.0.1",
+    "ts-patch": "3.3.0"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "~5.9.3"
   },
   "dependencies": {
-    "rxjs": "7.8.2"
+    "rx-queue": "1.0.5",
+    "rxjs": "7.8.2",
+    "typia": "12.0.1"
   }
 }

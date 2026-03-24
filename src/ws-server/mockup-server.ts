@@ -33,7 +33,9 @@ Bun.serve({
   },
   websocket: {
     open: (ws) => {
-      ws.send(`[${now_formatted()}] Hello there!`);
+      ws.send(JSON.stringify({
+        request_id: `{"[${now_formatted()}] Hello there!}`,
+      }))
     },
     message: (ws, message) => {
       console.log(`[${now_formatted()}] Received message:`, message);

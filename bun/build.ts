@@ -1,5 +1,7 @@
-import {APP_GLOBAL_SYMBOL_NAME} from "../src/app/app-global-symbol-name";
 import path from "node:path";
+import UnpluginTypia from '@typia/unplugin/bun';
+
+import {APP_GLOBAL_SYMBOL_NAME} from "../src/app/app-global-symbol-name";
 
 const root_dir_project = path.resolve(import.meta.dirname, '..');
 
@@ -15,7 +17,9 @@ await Bun.build({
 
   // We want to preserve the code as much as possible so it's easier
   // to transform the output down below.
-  minify: false
+  minify: false,
+
+  plugins: [UnpluginTypia()]
 });
 
 /**

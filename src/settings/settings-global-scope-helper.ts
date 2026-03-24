@@ -28,4 +28,9 @@ export class SettingsGlobalScopeHelper {
     if (SettingsGlobalScopeHelper.app_state == null) return;
     SettingsChanger.changeWsServerConnectionUrl(SettingsGlobalScopeHelper.app_state, submit_button_el);
   }
+
+  static changeIncludeExtraDataUrl(submit_button_el?: HTMLButtonElement) {
+    if (SettingsGlobalScopeHelper.app_state == null) return;
+    SettingsChanger.changeIncludeExtraDataUrl(SettingsGlobalScopeHelper.app_state, submit_button_el);
+  }
 }

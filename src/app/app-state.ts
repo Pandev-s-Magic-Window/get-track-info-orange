@@ -3,12 +3,18 @@ import {Subject} from "rxjs";
 import type {SettingsGlobalScopeHelper} from "../settings/settings-global-scope-helper";
 import type {WsMessageFromClient} from "../ws-client/ws-message-from-client";
 import type {WsMessageFromServer} from "../ws-client/ws-message-from-server";
+import type {TrackInfo} from "../track-info";
 
 export interface AppState {
   app_name: string;
 
   emission_mode: {
     value: 'active' | 'passive',
+    local_storage_key: string
+  };
+
+  include_extra_data_f: {
+    value: 'yes' | 'no',
     local_storage_key: string
   };
 
@@ -26,6 +32,8 @@ export interface AppState {
   };
 
   settings_global_scope_helper?: SettingsGlobalScopeHelper;
+
+  track_info_cache: Map<string, TrackInfo>,
 
   logger: (...item_list: any[]) => void;
 }
