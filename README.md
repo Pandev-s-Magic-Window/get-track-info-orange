@@ -49,7 +49,7 @@ If you happen to need data not currently in the default payload, you can access 
 
 ---
 
-# Sample response
+# Sample responses
 <details>
   <summary>Click here to see a sample response</summary>
   
